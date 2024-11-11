@@ -11,12 +11,15 @@ const signJWTToken = (id) => {
 
 const register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, confirmPassword } = req.body;
 
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
       return res.status(400).json({ msg: "Please fill all fields" });
     }
 
+    if (password !== confirmPassword) {
+        return res.status(400).json({ msg: "Passwords do not match" });
+      }
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ msg: "User already exists" });
@@ -69,7 +72,7 @@ const login = async (req, res) => {
 
     const token = signJWTToken(user._id);
     res.status(200).json({
-      status: "success",
+      status: "user login successful",
       user,
       token,
     });

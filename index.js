@@ -1,22 +1,22 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const router = require("./src/Router/Auth");
+const app = express();
 const cors = require("cors");
 
-// Middleware
-const app = express();
 
-//  Enable cors
 app.use(cors());
+app.use (express.json());
+app.use("/api/v1/auth", router);
 
 // Route middleware
-app.get("/api/v1/", (req, res) => {
-  res.send("API is running");
-});
+// app.get("/api/v1/", (req, res) => {
+//   res.send("API is running");
+// });
 
 // Connect to MongoDB
 const mongoApiConnect = process.env.mongoURL;
-app.use (express.json());
 
 let PORT = process.env.PORT || 3000;
 const start = async () => {

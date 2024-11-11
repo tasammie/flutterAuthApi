@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { validateEmail } = require('../Middleware/emailValidation');
 const {Schema}  = mongoose;
 
-const AuthSchema = Schema({
+const userSchema = mongoose.Schema({
     firstName: {
         type: String,
         required: true
@@ -26,4 +26,8 @@ const AuthSchema = Schema({
     }
 }, {timestamps: true});
 
-module.exports = mongoose.model('Auth', AuthSchema);
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
+
+// module.exports = mongoose.model('User', userSchema);

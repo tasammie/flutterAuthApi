@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const router = require("./src/Router/Auth");
+const userRouter = require("./src/Router/usersRoute");
 const app = express();
 const cors = require("cors");
 
@@ -9,6 +10,7 @@ const cors = require("cors");
 app.use(cors());
 app.use (express.json());
 app.use("/api/v1/auth", router);
+app.use("/api/v1/users", userRouter);
 
 // Route middleware
 // app.get("/api/v1/", (req, res) => {

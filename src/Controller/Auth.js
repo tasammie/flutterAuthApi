@@ -47,8 +47,6 @@ const register = async (req, res) => {
   }
 };
 
-
-
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -83,7 +81,74 @@ const login = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { firstName, lastName, email, password } = req.body;
+
+    if (!firstName && !lastName && !email && !password) {
+      return res.status(400).json({ msg: "No fields provided for update" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (email) {
+      const emailExists = await User.findOne({ email });
+      if (emailExists && emailExists._id.toString() !== userId) {
+        return res.status(409).json({ msg: "Email already in use" });
+      }
+      user.email = email;
+    }
+    if (password) {
+      const salt = await bcrypt.genSalt(12);
+      user.password = await bcrypt.hash(password, salt);
+    }
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      status: "success",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    await user.deleteOne();
+    res.status(200).json({ msg: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, '-password'); 
+    res.status(200).json({ success: true, users });
+  } catch (error) {
+    console.error('Error fetching users:', error.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 module.exports = {
   register,
   login,
+  updateUser,
+  deleteUser,
+  getUsers
 };
